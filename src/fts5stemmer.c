@@ -149,9 +149,16 @@ static int ftsSnowballCreate(void *pCtx, const char **azArg, int nArg, Fts5Token
 static int fts5SnowballCb(void *pCtx, int tflags, const char *pToken, int nToken, int iStart, int iEnd) {
     struct SnowTokenizer *p = (struct SnowTokenizer *)pCtx;
 
-    if (nToken > MAX_TOKEN_LEN || nToken <= MIN_TOKEN_LEN) {
+    if (nToken <= MIN_TOKEN_LEN*2)
+    {
+      return SQLITE_OK;
+    }
+    else if (nToken > MAX_TOKEN_LEN)
+    {
         return p->xToken(p->pCtx, tflags, pToken, nToken, iStart, iEnd);
-    } else {
+    }
+    else
+    {
         int nBuf = nToken;
         sb_symbol *stemmed = NULL;
         struct sb_stemmer **stemmer;
